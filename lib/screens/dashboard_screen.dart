@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
+import '../providers/theme_provider.dart';
+import '../providers/user_provider.dart';
 import '../widgets/stat_card.dart';
 import '../widgets/terminal_list_item.dart';
 import 'terminal_detail_screen.dart';
@@ -9,17 +12,22 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              // Handle logout
-            },
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: AppTheme.getPrimaryGradient(isDarkMode),
+            ),
           ),
-        ],
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -28,31 +36,57 @@ class DashboardScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // User greeting
-              Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 20,
-                    backgroundColor: AppTheme.primaryColor,
-                    child: Icon(
-                      Icons.person,
-                      color: Colors.white,
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: isDarkMode ? AppTheme.cardColorDark : Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Selamat datang,',
-                        style: Theme.of(context).textTheme.bodyMedium,
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Admin Dishub',
-                        style: Theme.of(context).textTheme.displaySmall,
+                      child: CircleAvatar(
+                        radius: 24,
+                        backgroundImage: NetworkImage(userProvider.profileImageUrl),
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(width: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Selamat datang,',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        Text(
+                          userProvider.username,
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               
               const SizedBox(height: 24),
@@ -65,7 +99,7 @@ class DashboardScreen extends StatelessWidget {
                       title: 'Total Terminal',
                       value: '42',
                       icon: Icons.location_on,
-                      color: AppTheme.primaryColor,
+                      color: isDarkMode ? AppTheme.primaryColorDark : AppTheme.primaryColor,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -74,7 +108,7 @@ class DashboardScreen extends StatelessWidget {
                       title: 'Kota Terpadat',
                       value: 'Surabaya',
                       icon: Icons.people,
-                      color: AppTheme.accentColor,
+                      color: isDarkMode ? AppTheme.accentColorDark : AppTheme.accentColor,
                     ),
                   ),
                 ],
@@ -96,16 +130,23 @@ class DashboardScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Terminal Terbaru',
-                    style: Theme.of(context).textTheme.displaySmall,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-                  TextButton(
+                  TextButton.icon(
                     onPressed: () {},
-                    child: const Text('Lihat Semua'),
+                    icon: const Icon(Icons.arrow_forward),
+                    label: const Text('Lihat Semua'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: isDarkMode ? AppTheme.primaryColorDark : AppTheme.primaryColor,
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
               
+              // Terminal list
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),

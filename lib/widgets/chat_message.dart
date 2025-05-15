@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
+import '../providers/theme_provider.dart';
 
 class ChatMessage extends StatelessWidget {
   final String sender;
@@ -17,22 +19,44 @@ class ChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    
+    final primaryColor = isDarkMode ? AppTheme.primaryColorDark : AppTheme.primaryColor;
+    final bubbleColor = isMe 
+        ? primaryColor 
+        : (isDarkMode ? Colors.grey[800]! : Colors.white);
+    final textColor = isMe 
+        ? Colors.white 
+        : Theme.of(context).textTheme.bodyMedium!.color!;
+    
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isMe) ...[
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: AppTheme.secondaryTextColor,
-              child: Text(
-                sender[0],
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+            Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: CircleAvatar(
+                radius: 16,
+                backgroundColor: isMe ? primaryColor : Colors.grey[500],
+                child: Text(
+                  sender[0],
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -40,43 +64,72 @@ class ChatMessage extends StatelessWidget {
           ],
           Flexible(
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: isMe ? AppTheme.primaryColor : Colors.grey[100],
+                color: bubbleColor,
                 borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(16),
-                  topRight: const Radius.circular(16),
-                  bottomLeft: isMe ? const Radius.circular(16) : Radius.zero,
-                  bottomRight: isMe ? Radius.zero : const Radius.circular(16),
+                  topLeft: const Radius.circular(18),
+                  topRight: const Radius.circular(18),
+                  bottomLeft: isMe ? const Radius.circular(18) : const Radius.circular(4),
+                  bottomRight: isMe ? const Radius.circular(4) : const Radius.circular(18),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+                border: !isMe ? Border.all(
+                  color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+                  width: 1,
+                ) : null,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (!isMe)
-                    Text(
-                      sender,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: isMe ? Colors.white : AppTheme.primaryColor,
-                        fontSize: 12,
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        sender,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: isMe ? Colors.white.withOpacity(0.9) : primaryColor,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
-                  const SizedBox(height: 4),
                   Text(
                     message,
                     style: TextStyle(
-                      color: isMe ? Colors.white : AppTheme.textColor,
+                      color: textColor,
+                      fontSize: 15,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    time,
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: isMe ? Colors.white.withOpacity(0.7) : AppTheme.secondaryTextColor,
-                    ),
-                    textAlign: TextAlign.right,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        time,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isMe 
+                              ? Colors.white.withOpacity(0.7) 
+                              : (isDarkMode ? Colors.grey[400] : Colors.grey[600]),
+                        ),
+                      ),
+                      if (isMe) ...[
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.check_circle,
+                          size: 12,
+                          color: Colors.white.withOpacity(0.7),
+                        ),
+                      ],
+                    ],
                   ),
                 ],
               ),
@@ -84,15 +137,26 @@ class ChatMessage extends StatelessWidget {
           ),
           if (isMe) ...[
             const SizedBox(width: 8),
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: AppTheme.primaryColor,
-              child: Text(
-                sender[0],
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+            Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: CircleAvatar(
+                radius: 16,
+                backgroundColor: isMe ? primaryColor : Colors.grey[500],
+                child: Text(
+                  sender[0],
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

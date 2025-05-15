@@ -12,12 +12,9 @@ class LoginScreen extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              AppTheme.primaryColor,
-              Color(0xFF1A4980),
-            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: AppTheme.primaryGradient,
           ),
         ),
         child: SafeArea(
@@ -29,10 +26,17 @@ class LoginScreen extends StatelessWidget {
                 children: [
                   // Logo and App Name
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withOpacity(0.15),
                       shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 20,
+                          spreadRadius: 5,
+                        ),
+                      ],
                     ),
                     child: const Icon(
                       Icons.map_outlined,
@@ -40,36 +44,49 @@ class LoginScreen extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
                   Text(
                     'Visualisasi Kepadatan\nPenumpang',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.displayMedium?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
+                          height: 1.2,
                         ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    'Provinsi Jawa Timur',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.white.withOpacity(0.8),
-                        ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      'Provinsi Jawa Timur',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                    ),
                   ),
                   const SizedBox(height: 60),
                   
                   // Login Card
                   Card(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(24),
                     ),
+                    elevation: 10,
+                    shadowColor: Colors.black.withOpacity(0.3),
                     child: Padding(
-                      padding: const EdgeInsets.all(24.0),
+                      padding: const EdgeInsets.all(32.0),
                       child: Column(
                         children: [
                           Text(
                             'Selamat Datang',
-                            style: Theme.of(context).textTheme.displaySmall,
+                            style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -78,27 +95,40 @@ class LoginScreen extends StatelessWidget {
                                   color: AppTheme.secondaryTextColor,
                                 ),
                           ),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: 40),
                           
                           // Google Login Button
-                          CustomButton(
-                            onPressed: () {
-                              // Navigate to main screen after login
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                  builder: (context) => const MainScreen(),
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  spreadRadius: 1,
                                 ),
-                              );
-                            },
-                            text: 'Login dengan Google',
-                            icon: Image.asset(
-                              'assets/google_logo.png',
-                              height: 24,
-                              width: 24,
+                              ],
                             ),
-                            backgroundColor: Colors.white,
-                            textColor: AppTheme.textColor,
-                            borderColor: AppTheme.dividerColor,
+                            child: CustomButton(
+                              onPressed: () {
+                                // Navigate to main screen after login
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) => const MainScreen(),
+                                  ),
+                                );
+                              },
+                              text: 'Login dengan Google',
+                              icon: Image.asset(
+                                'assets/google_logo.png',
+                                height: 24,
+                                width: 24,
+                              ),
+                              backgroundColor: Colors.white,
+                              textColor: AppTheme.textColor,
+                              borderColor: AppTheme.dividerColor,
+                              height: 56,
+                            ),
                           ),
                           
                           const SizedBox(height: 16),
@@ -107,7 +137,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                   
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
                   Text(
                     '© 2024 Dinas Perhubungan Jawa Timur',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(

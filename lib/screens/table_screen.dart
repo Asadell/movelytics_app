@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
 import '../providers/theme_provider.dart';
-import 'terminal_detail_screen.dart';
+import '../models/terminal.dart'; // Import Terminal model
 
 class TableScreen extends StatefulWidget {
   const TableScreen({super.key});
@@ -12,79 +12,6 @@ class TableScreen extends StatefulWidget {
 }
 
 class _TableScreenState extends State<TableScreen> {
-  final List<Map<String, dynamic>> _terminals = [
-    {
-      'name': 'Terminal Arjosari',
-      'location': 'Malang',
-      'type': 'Tipe A',
-      'density': 'Sedang',
-      'count': '5,200',
-    },
-    {
-      'name': 'Terminal Brawijaya',
-      'location': 'Banyuwangi',
-      'type': 'Tipe B',
-      'density': 'Sedang',
-      'count': '4,300',
-    },
-    {
-      'name': 'Terminal Joyoboyo',
-      'location': 'Surabaya',
-      'type': 'Tipe B',
-      'density': 'Tinggi',
-      'count': '7,200',
-    },
-    {
-      'name': 'Terminal Kepuhsari',
-      'location': 'Jember',
-      'type': 'Tipe B',
-      'density': 'Sedang',
-      'count': '3,900',
-    },
-    {
-      'name': 'Terminal Kertosono',
-      'location': 'Nganjuk',
-      'type': 'Tipe C',
-      'density': 'Rendah',
-      'count': '1,500',
-    },
-    {
-      'name': 'Terminal Maospati',
-      'location': 'Magetan',
-      'type': 'Tipe C',
-      'density': 'Rendah',
-      'count': '1,200',
-    },
-    {
-      'name': 'Terminal Patria',
-      'location': 'Blitar',
-      'type': 'Tipe B',
-      'density': 'Rendah',
-      'count': '2,100',
-    },
-    {
-      'name': 'Terminal Purabaya',
-      'location': 'Surabaya',
-      'type': 'Tipe A',
-      'density': 'Tinggi',
-      'count': '8,500',
-    },
-    {
-      'name': 'Terminal Rajekwesi',
-      'location': 'Bojonegoro',
-      'type': 'Tipe C',
-      'density': 'Rendah',
-      'count': '1,800',
-    },
-    {
-      'name': 'Terminal Tambak Oso Wilangun',
-      'location': 'Surabaya',
-      'type': 'Tipe A',
-      'density': 'Sedang',
-      'count': '4,800',
-    },
-  ];
-
   String _sortColumn = 'name';
   bool _sortAscending = true;
   String _searchQuery = '';
@@ -95,9 +22,9 @@ class _TableScreenState extends State<TableScreen> {
     final isDarkMode = themeProvider.isDarkMode;
 
     // Filter terminals based on search query
-    final filteredTerminals = _terminals.where((terminal) {
-      final name = terminal['name'].toString().toLowerCase();
-      final location = terminal['location'].toString().toLowerCase();
+    final filteredTerminals = terminalList.where((terminal) {
+      final name = terminal.name.toLowerCase();
+      final location = terminal.location.toLowerCase();
       final query = _searchQuery.toLowerCase();
       return name.contains(query) || location.contains(query);
     }).toList();
@@ -105,9 +32,9 @@ class _TableScreenState extends State<TableScreen> {
     // Sort terminals
     filteredTerminals.sort((a, b) {
       if (_sortAscending) {
-        return a[_sortColumn].toString().compareTo(b[_sortColumn].toString());
+        return _compareTerminalProperty(a, b, _sortColumn);
       } else {
-        return b[_sortColumn].toString().compareTo(a[_sortColumn].toString());
+        return _compareTerminalProperty(b, a, _sortColumn);
       }
     });
 
@@ -177,24 +104,6 @@ class _TableScreenState extends State<TableScreen> {
             ),
           ),
 
-          // Table header
-          // Container(
-          //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          //   decoration: BoxDecoration(
-          //     color: isDarkMode
-          //         ? AppTheme.primaryColorDark.withOpacity(0.1)
-          //         : AppTheme.primaryColor.withOpacity(0.05),
-          //   ),
-          //   child: Row(
-          //     children: [
-          //       _buildTableHeader('Nama Terminal', 'name', flex: 3),
-          //       _buildTableHeader('Kota/Kabupaten', 'location', flex: 2),
-          //       _buildTableHeader('Jenis', 'type'),
-          //       _buildTableHeader('Estimasi Penumpang', 'count', flex: 2),
-          //     ],
-          //   ),
-          // ),
-
           // Table content
           Expanded(
             child: filteredTerminals.isEmpty
@@ -214,10 +123,10 @@ class _TableScreenState extends State<TableScreen> {
   }
 
   Widget _buildTerminalListItem(
-      Map<String, dynamic> terminal, BuildContext context, bool isDarkMode) {
+      Terminal terminal, BuildContext context, bool isDarkMode) {
     Color statusColor;
 
-    switch (terminal['density']) {
+    switch (terminal.density) {
       case 'Tinggi':
         statusColor = AppTheme.highDensityColor;
         break;
@@ -269,7 +178,7 @@ class _TableScreenState extends State<TableScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        terminal['name'],
+                        terminal.name,
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
@@ -288,7 +197,7 @@ class _TableScreenState extends State<TableScreen> {
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              terminal['location'],
+                              terminal.location,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: isDarkMode
@@ -316,7 +225,7 @@ class _TableScreenState extends State<TableScreen> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    terminal['type'],
+                    'Tipe A',
                     style: TextStyle(
                       color: isDarkMode
                           ? AppTheme.primaryColorDark
@@ -337,7 +246,7 @@ class _TableScreenState extends State<TableScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(
+                  padding: const EdgeInsets.only(
                     left: 15,
                   ),
                   child: Column(
@@ -367,7 +276,7 @@ class _TableScreenState extends State<TableScreen> {
                           ),
                         ),
                         child: Text(
-                          terminal['density'],
+                          terminal.density,
                           style: TextStyle(
                             color: statusColor,
                             fontWeight: FontWeight.w600,
@@ -391,7 +300,7 @@ class _TableScreenState extends State<TableScreen> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      terminal['count'],
+                      terminal.estimatedPassengers.toString(),
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -480,9 +389,34 @@ class _TableScreenState extends State<TableScreen> {
     );
   }
 
+  // Helper method to compare terminal properties
+  int _compareTerminalProperty(Terminal a, Terminal b, String property) {
+    switch (property) {
+      case 'name':
+        return a.name.compareTo(b.name);
+      case 'location':
+        return a.location.compareTo(b.location);
+      case 'city':
+        return a.city.compareTo(b.city);
+      case 'type':
+        return a.type.compareTo(b.type);
+      case 'density':
+        return a.density.compareTo(b.density);
+      case 'count':
+        return a.estimatedPassengers.compareTo(b.estimatedPassengers);
+      default:
+        return a.name.compareTo(b.name);
+    }
+  }
+
   void _showFilterDialog(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     final isDarkMode = themeProvider.isDarkMode;
+
+    // Get unique cities from the terminal list
+    final cities =
+        terminalList.map((terminal) => terminal.city).toSet().toList();
+    cities.add('Semua');
 
     showModalBottomSheet(
       context: context,
@@ -590,8 +524,7 @@ class _TableScreenState extends State<TableScreen> {
                     ),
                     dropdownColor:
                         Theme.of(context).inputDecorationTheme.fillColor,
-                    items: ['Surabaya', 'Malang', 'Sidoarjo', 'Gresik', 'Semua']
-                        .map((String value) {
+                    items: cities.map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -720,17 +653,14 @@ class _TableScreenState extends State<TableScreen> {
     );
   }
 
-  void _navigateToTerminalDetail(Map<String, dynamic> terminal) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TerminalDetailScreen(
-          terminalName: terminal['name'],
-          location: terminal['location'],
-          density: terminal['density'],
-          count: terminal['count'],
-        ),
-      ),
-    );
+  void _navigateToTerminalDetail(Terminal terminal) {
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => TerminalDetailScreen(
+    //       terminal: terminal, // Pass the entire terminal object
+    //     ),
+    //   ),
+    // );
   }
 }

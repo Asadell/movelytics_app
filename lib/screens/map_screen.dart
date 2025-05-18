@@ -4,7 +4,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../theme/app_theme.dart';
 import '../providers/theme_provider.dart';
-import '../providers/terminal_provider.dart';
 import '../models/terminal.dart';
 import 'terminal_detail_screen.dart';
 
@@ -25,7 +24,6 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final terminalProvider = Provider.of<TerminalProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
 
     return Scaffold(
@@ -70,7 +68,7 @@ class _MapScreenState extends State<MapScreen> {
 
               // Terminal markers
               MarkerLayer(
-                markers: _buildMarkers(terminalProvider.terminals, context),
+                markers: _buildMarkers(terminalList, context),
               ),
             ],
           ),
@@ -441,18 +439,18 @@ class _MapScreenState extends State<MapScreen> {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context); // Close dialog
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TerminalDetailScreen(
-                          terminalName: terminal.name,
-                          location: terminal.city,
-                          density: terminal.density,
-                          count: terminal.estimatedPassengers.toString(),
-                        ),
-                      ),
-                    );
+                    // Navigator.pop(context); // Close dialog
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => TerminalDetailScreen(
+                    //       terminalName: terminal.name,
+                    //       location: terminal.city,
+                    //       density: terminal.density,
+                    //       count: terminal.estimatedPassengers.toString(),
+                    //     ),
+                    //   ),
+                    // );
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 10),

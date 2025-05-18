@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:movelytics_app/models/terminal.dart';
 import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
 import '../providers/theme_provider.dart';
 
 class TerminalListItem extends StatelessWidget {
-  final String name;
-  final String location;
-  final String density;
-  final String count;
+  final Terminal terminal;
   final Color statusColor;
   final VoidCallback onTap;
 
   const TerminalListItem({
     super.key,
-    required this.name,
-    required this.location,
-    required this.density,
-    required this.count,
+    required this.terminal,
     required this.statusColor,
     required this.onTap,
   });
@@ -25,7 +20,7 @@ class TerminalListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(
@@ -59,7 +54,7 @@ class TerminalListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      name,
+                      terminal.name,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -74,10 +69,13 @@ class TerminalListItem extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          location,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: isDarkMode ? AppTheme.secondaryTextColorDark : AppTheme.secondaryTextColor,
-                              ),
+                          terminal.location,
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: isDarkMode
+                                        ? AppTheme.secondaryTextColorDark
+                                        : AppTheme.secondaryTextColor,
+                                  ),
                         ),
                       ],
                     ),
@@ -101,7 +99,7 @@ class TerminalListItem extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      density,
+                      terminal.density,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: statusColor,
                             fontWeight: FontWeight.w600,
@@ -118,7 +116,7 @@ class TerminalListItem extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        count,
+                        terminal.estimatedPassengers.toString(),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),

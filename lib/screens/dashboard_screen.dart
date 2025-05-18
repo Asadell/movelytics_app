@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:movelytics_app/models/terminal.dart';
+import 'package:movelytics_app/screens/table_screen.dart';
 import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
 import '../providers/theme_provider.dart';
@@ -15,6 +17,7 @@ class DashboardScreen extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final userProvider = Provider.of<UserProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
+    final Terminal highestTerminal = findTerminalWithHighestPassengers();
 
     return Scaffold(
       appBar: AppBar(
@@ -35,7 +38,6 @@ class DashboardScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // User greeting
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -66,7 +68,8 @@ class DashboardScreen extends StatelessWidget {
                       ),
                       child: CircleAvatar(
                         radius: 24,
-                        backgroundImage: NetworkImage(userProvider.profileImageUrl),
+                        backgroundImage:
+                            NetworkImage(userProvider.profileImageUrl),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -79,27 +82,27 @@ class DashboardScreen extends StatelessWidget {
                         ),
                         Text(
                           userProvider.username,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
-              
               const SizedBox(height: 24),
-              
-              // Stats cards
               Row(
                 children: [
                   Expanded(
                     child: StatCard(
                       title: 'Total Terminal',
-                      value: '42',
+                      value: terminalList.length.toString(),
                       icon: Icons.location_on,
-                      color: isDarkMode ? AppTheme.primaryColorDark : AppTheme.primaryColor,
+                      color: isDarkMode
+                          ? AppTheme.primaryColorDark
+                          : AppTheme.primaryColor,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -108,7 +111,9 @@ class DashboardScreen extends StatelessWidget {
                       title: 'Kota Terpadat',
                       value: 'Surabaya',
                       icon: Icons.people,
-                      color: isDarkMode ? AppTheme.accentColorDark : AppTheme.accentColor,
+                      color: isDarkMode
+                          ? AppTheme.accentColorDark
+                          : AppTheme.accentColor,
                     ),
                   ),
                 ],
@@ -116,15 +121,13 @@ class DashboardScreen extends StatelessWidget {
               const SizedBox(height: 16),
               StatCard(
                 title: 'Terminal Terpadat',
-                value: 'Terminal Purabaya',
-                subtitle: '8,500 penumpang/hari',
+                value: highestTerminal.name,
+                subtitle:
+                    '${highestTerminal.estimatedPassengers} penumpang/hari',
                 icon: Icons.directions_bus,
                 color: AppTheme.highDensityColor,
               ),
-              
               const SizedBox(height: 24),
-              
-              // Recent terminals
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -135,61 +138,31 @@ class DashboardScreen extends StatelessWidget {
                         ),
                   ),
                   TextButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => TableScreen()),
+                      );
+                    },
                     icon: const Icon(Icons.arrow_forward),
                     label: const Text('Lihat Semua'),
                     style: TextButton.styleFrom(
-                      foregroundColor: isDarkMode ? AppTheme.primaryColorDark : AppTheme.primaryColor,
+                      foregroundColor: isDarkMode
+                          ? AppTheme.primaryColorDark
+                          : AppTheme.primaryColor,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
-              
-              // Terminal list
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: 5,
                 itemBuilder: (context, index) {
-                  // Sample terminal data
-                  final terminals = [
-                    {
-                      'name': 'Terminal Purabaya',
-                      'location': 'Surabaya',
-                      'density': 'Tinggi',
-                      'count': '8,500',
-                    },
-                    {
-                      'name': 'Terminal Arjosari',
-                      'location': 'Malang',
-                      'density': 'Sedang',
-                      'count': '5,200',
-                    },
-                    {
-                      'name': 'Terminal Patria',
-                      'location': 'Blitar',
-                      'density': 'Rendah',
-                      'count': '2,100',
-                    },
-                    {
-                      'name': 'Terminal Brawijaya',
-                      'location': 'Banyuwangi',
-                      'density': 'Sedang',
-                      'count': '4,300',
-                    },
-                    {
-                      'name': 'Terminal Rajekwesi',
-                      'location': 'Bojonegoro',
-                      'density': 'Rendah',
-                      'count': '1,800',
-                    },
-                  ];
-                  
-                  final terminal = terminals[index];
+                  final terminal = terminalList[index];
                   Color statusColor;
-                  
-                  switch (terminal['density']) {
+
+                  switch (terminal.density) {
                     case 'Tinggi':
                       statusColor = AppTheme.highDensityColor;
                       break;
@@ -199,21 +172,15 @@ class DashboardScreen extends StatelessWidget {
                     default:
                       statusColor = AppTheme.lowDensityColor;
                   }
-                  
+
                   return TerminalListItem(
-                    name: terminal['name']!,
-                    location: terminal['location']!,
-                    density: terminal['density']!,
-                    count: terminal['count']!,
                     statusColor: statusColor,
+                    terminal: terminal,
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => TerminalDetailScreen(
-                            terminalName: terminal['name']!,
-                            location: terminal['location']!,
-                            density: terminal['density']!,
-                            count: terminal['count']!,
+                            terminal: terminal,
                           ),
                         ),
                       );

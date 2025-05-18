@@ -1,26 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:movelytics_app/models/terminal.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../theme/app_theme.dart';
 import '../providers/theme_provider.dart';
-import '../providers/terminal_provider.dart';
 import 'terminal_chat_screen.dart';
 import 'single_terminal_map_screen.dart';
 
 class TerminalDetailScreen extends StatefulWidget {
-  final String terminalName;
-  final String location;
-  final String density;
-  final String count;
+  final Terminal terminal;
 
   const TerminalDetailScreen({
     super.key,
-    required this.terminalName,
-    required this.location,
-    required this.density,
-    required this.count,
+    required this.terminal,
   });
 
   @override
@@ -33,22 +27,8 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
   @override
   void initState() {
     super.initState();
-    // Default location (will be updated in didChangeDependencies)
-    _terminalLocation = const LatLng(-7.8, 112.5);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Find the terminal location from the provider
-    final terminalProvider =
-        Provider.of<TerminalProvider>(context, listen: false);
-    final terminal = terminalProvider.terminals.firstWhere(
-      (t) => t.name == widget.terminalName,
-      orElse: () => terminalProvider.terminals.first,
-    );
-
-    _terminalLocation = LatLng(terminal.latitude, terminal.longitude);
+    _terminalLocation =
+        LatLng(widget.terminal.latitude, widget.terminal.longitude);
   }
 
   @override
@@ -58,7 +38,7 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
 
     Color statusColor;
 
-    switch (widget.density) {
+    switch (widget.terminal.density) {
       case 'Tinggi':
         statusColor = AppTheme.highDensityColor;
         break;
@@ -71,7 +51,7 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.terminalName),
+        title: Text(widget.terminal.name),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -89,7 +69,7 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => TerminalChatScreen(
-                    terminalName: widget.terminalName,
+                    terminalName: widget.terminal.name,
                   ),
                 ),
               );
@@ -151,7 +131,7 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.terminalName,
+                              widget.terminal.name,
                               style: Theme.of(context)
                                   .textTheme
                                   .displaySmall
@@ -169,7 +149,7 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  widget.location,
+                                  widget.terminal.location,
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyMedium
@@ -196,7 +176,7 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
                           ),
                         ),
                         child: Text(
-                          widget.density,
+                          widget.terminal.density,
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: Colors.white,
@@ -223,7 +203,7 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
                           child: Column(
                             children: [
                               Text(
-                                widget.count,
+                                widget.terminal.estimatedPassengers.toString(),
                                 style: Theme.of(context)
                                     .textTheme
                                     .displaySmall
@@ -283,7 +263,7 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
                           child: Column(
                             children: [
                               Text(
-                                '12',
+                                widget.terminal.rating.toString(),
                                 style: Theme.of(context)
                                     .textTheme
                                     .displaySmall
@@ -293,7 +273,7 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
                                     ),
                               ),
                               Text(
-                                'Petugas',
+                                'Rating',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall
@@ -352,9 +332,9 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => SingleTerminalMapScreen(
-                            terminalName: widget.terminalName,
+                            terminalName: widget.terminal.name,
                             location: _terminalLocation,
-                            density: widget.density,
+                            density: widget.terminal.density,
                           ),
                         ),
                       );
@@ -454,9 +434,9 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             SingleTerminalMapScreen(
-                                          terminalName: widget.terminalName,
+                                          terminalName: widget.terminal.name,
                                           location: _terminalLocation,
-                                          density: widget.density,
+                                          density: widget.terminal.density,
                                         ),
                                       ),
                                     );
@@ -491,8 +471,8 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
                     ),
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        _launchMapsUrl(_terminalLocation.latitude,
-                            _terminalLocation.longitude, widget.terminalName);
+                        _launchMapsUrl(widget.terminal.latitude,
+                            widget.terminal.longitude, widget.terminal.name);
                       },
                       icon: const Icon(Icons.map_outlined),
                       label: const Text('Buka di Google Maps'),
@@ -555,7 +535,7 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
                           _buildInfoItem(
                             context,
                             'Alamat',
-                            'Jl. Terminal ${widget.terminalName}, ${widget.location}',
+                            'Jl. Terminal ${widget.terminal.name}, ${widget.terminal.location}',
                             Icons.location_on,
                           ),
                           const Divider(),
@@ -564,6 +544,27 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
                             'Jam Operasional',
                             '05:00 - 22:00 WIB',
                             Icons.access_time,
+                          ),
+                          const Divider(),
+                          _buildInfoItem(
+                            context,
+                            'Tipe Terminal',
+                            widget.terminal.type,
+                            Icons.category,
+                          ),
+                          const Divider(),
+                          _buildInfoItem(
+                            context,
+                            'Deskripsi',
+                            widget.terminal.description,
+                            Icons.description,
+                          ),
+                          const Divider(),
+                          _buildInfoItem(
+                            context,
+                            'Kota',
+                            widget.terminal.city,
+                            Icons.location_city,
                           ),
                           const Divider(),
                           _buildInfoItem(
@@ -611,7 +612,7 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => TerminalChatScreen(
-                              terminalName: widget.terminalName,
+                              terminalName: widget.terminal.name,
                             ),
                           ),
                         );

@@ -143,17 +143,17 @@ class TerminalPopup extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   // Navigate to terminal detail
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TerminalDetailScreen(
-                        terminalName: terminal.name,
-                        location: terminal.city,
-                        density: terminal.density,
-                        count: terminal.estimatedPassengers.toString(),
-                      ),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => TerminalDetailScreen(
+                  //       terminalName: terminal.name,
+                  //       location: terminal.city,
+                  //       density: terminal.density,
+                  //       count: terminal.estimatedPassengers.toString(),
+                  //     ),
+                  //   ),
+                  // );
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 10),

@@ -7,12 +7,25 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:740334477195:android:1726a68cf73bcd86c0d98e",
+        "mobilesdk_app_id": "1:740334477195:android:1d2199de48093874c0d98e",
         "android_client_info": {
-          "package_name": "com.example.movelytics_app"
+          "package_name": "com.del.movelytics_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "740334477195-76qfb67r6ip9b31j1ijvq5333c4lesgp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.del.movelytics_app",
+            "certificate_hash": "52953c1b31daa1decb11c04a5776ec35719aa57f"
+          }
+        },
+        {
+          "client_id": "740334477195-iss4aem8idua3110nmn7ud4rvqtmuqeg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCFbWwu9Tn2XE04EBggIf6JW7k1IjLAKVE"
@@ -20,7 +33,41 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "740334477195-iss4aem8idua3110nmn7ud4rvqtmuqeg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:740334477195:android:1726a68cf73bcd86c0d98e",
+        "android_client_info": {
+          "package_name": "com.example.movelytics_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "740334477195-iss4aem8idua3110nmn7ud4rvqtmuqeg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFbWwu9Tn2XE04EBggIf6JW7k1IjLAKVE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "740334477195-iss4aem8idua3110nmn7ud4rvqtmuqeg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

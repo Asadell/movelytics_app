@@ -60,7 +60,7 @@ class _MapScreenState extends State<MapScreen> {
                     ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
                     : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                 subdomains: const ['a', 'b', 'c'],
-                userAgentPackageName: 'com.example.app',
+                userAgentPackageName: 'com.del.app',
               ),
 
               // Polygon layer for East Java districts (simplified for demo)

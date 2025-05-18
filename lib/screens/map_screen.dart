@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movelytics_app/models/region_polygons.dart';
 import 'package:movelytics_app/screens/terminal_detail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -6,22 +7,6 @@ import 'package:latlong2/latlong.dart';
 import '../theme/app_theme.dart';
 import '../providers/theme_provider.dart';
 import '../models/terminal.dart';
-
-class RegionPolygon {
-  final String name;
-  final List<LatLng> points;
-  final Color color;
-  final Color borderColor;
-  bool isVisible;
-
-  RegionPolygon({
-    required this.name,
-    required this.points,
-    required this.color,
-    required this.borderColor,
-    this.isVisible = true,
-  });
-}
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -33,127 +18,22 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
 
-  // Indonesia center coordinates
   final LatLng _indonesiaCenter = const LatLng(-2.5, 118.0);
   double _currentZoom = 5.0;
 
-  // List of region polygons
-  late List<RegionPolygon> _regionPolygons;
+  late List<RegionPolygon> regionPolygonList;
 
-  // Toggle for showing/hiding all polygons
   bool _showPolygons = true;
 
   @override
   void initState() {
     super.initState();
-    _initPolygons();
-  }
-
-  void _initPolygons() {
-    _regionPolygons = [
-      // Surabaya
-      RegionPolygon(
-        name: 'Surabaya',
-        points: const [
-          LatLng(-7.217, 112.633),
-          LatLng(-7.217, 112.799),
-          LatLng(-7.350, 112.799),
-          LatLng(-7.350, 112.633),
-        ],
-        color: Colors.red.withOpacity(0.2),
-        borderColor: Colors.red.withOpacity(0.7),
-      ),
-      // Malang
-      RegionPolygon(
-        name: 'Malang',
-        points: const [
-          LatLng(-7.900, 112.500),
-          LatLng(-7.900, 112.700),
-          LatLng(-8.100, 112.700),
-          LatLng(-8.100, 112.500),
-        ],
-        color: Colors.blue.withOpacity(0.2),
-        borderColor: Colors.blue.withOpacity(0.7),
-      ),
-      // Kediri
-      RegionPolygon(
-        name: 'Kediri',
-        points: const [
-          LatLng(-7.700, 111.900),
-          LatLng(-7.700, 112.100),
-          LatLng(-7.900, 112.100),
-          LatLng(-7.900, 111.900),
-        ],
-        color: Colors.green.withOpacity(0.2),
-        borderColor: Colors.green.withOpacity(0.7),
-      ),
-      // Sidoarjo
-      RegionPolygon(
-        name: 'Sidoarjo',
-        points: const [
-          LatLng(-7.350, 112.650),
-          LatLng(-7.350, 112.850),
-          LatLng(-7.550, 112.850),
-          LatLng(-7.550, 112.650),
-        ],
-        color: Colors.purple.withOpacity(0.2),
-        borderColor: Colors.purple.withOpacity(0.7),
-      ),
-      // Mojokerto
-      RegionPolygon(
-        name: 'Mojokerto',
-        points: const [
-          LatLng(-7.450, 112.350),
-          LatLng(-7.450, 112.550),
-          LatLng(-7.650, 112.550),
-          LatLng(-7.650, 112.350),
-        ],
-        color: Colors.orange.withOpacity(0.2),
-        borderColor: Colors.orange.withOpacity(0.7),
-      ),
-      // Jakarta
-      RegionPolygon(
-        name: 'Jakarta',
-        points: const [
-          LatLng(-6.050, 106.650),
-          LatLng(-6.050, 106.950),
-          LatLng(-6.350, 106.950),
-          LatLng(-6.350, 106.650),
-        ],
-        color: Colors.amber.withOpacity(0.2),
-        borderColor: Colors.amber.withOpacity(0.7),
-      ),
-      // Bandung
-      RegionPolygon(
-        name: 'Bandung',
-        points: const [
-          LatLng(-6.800, 107.500),
-          LatLng(-6.800, 107.700),
-          LatLng(-7.000, 107.700),
-          LatLng(-7.000, 107.500),
-        ],
-        color: Colors.cyan.withOpacity(0.2),
-        borderColor: Colors.cyan.withOpacity(0.7),
-      ),
-      // Yogyakarta
-      RegionPolygon(
-        name: 'Yogyakarta',
-        points: const [
-          LatLng(-7.700, 110.300),
-          LatLng(-7.700, 110.500),
-          LatLng(-7.900, 110.500),
-          LatLng(-7.900, 110.300),
-        ],
-        color: Colors.teal.withOpacity(0.2),
-        borderColor: Colors.teal.withOpacity(0.7),
-      ),
-    ];
   }
 
   void _toggleAllPolygons() {
     setState(() {
       _showPolygons = !_showPolygons;
-      for (var polygon in _regionPolygons) {
+      for (var polygon in regionPolygonList) {
         polygon.isVisible = _showPolygons;
       }
     });
@@ -161,7 +41,7 @@ class _MapScreenState extends State<MapScreen> {
 
   void _togglePolygon(int index) {
     setState(() {
-      _regionPolygons[index].isVisible = !_regionPolygons[index].isVisible;
+      regionPolygonList[index].isVisible = !regionPolygonList[index].isVisible;
     });
   }
 
@@ -183,7 +63,6 @@ class _MapScreenState extends State<MapScreen> {
           ),
         ),
         actions: [
-          // Toggle all polygons button
           IconButton(
             onPressed: _toggleAllPolygons,
             icon: Icon(
@@ -198,7 +77,6 @@ class _MapScreenState extends State<MapScreen> {
       ),
       body: Stack(
         children: [
-          // Map
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
@@ -209,7 +87,6 @@ class _MapScreenState extends State<MapScreen> {
               onTap: (_, __) {},
             ),
             children: [
-              // Base map layer
               TileLayer(
                 urlTemplate: isDarkMode
                     ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
@@ -217,20 +94,14 @@ class _MapScreenState extends State<MapScreen> {
                 subdomains: const ['a', 'b', 'c'],
                 userAgentPackageName: 'com.example.app',
               ),
-
-              // Polygon layer for regions
               PolygonLayer(
                 polygons: _getVisiblePolygons(),
               ),
-
-              // Terminal markers
               MarkerLayer(
                 markers: _buildMarkers(terminalList, context),
               ),
             ],
           ),
-
-          // Map legend for density
           Positioned(
             top: 16,
             right: 16,
@@ -297,61 +168,6 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           ),
-
-          // // Polygon toggle control
-          // Positioned(
-          //   top: 16,
-          //   left: 16,
-          //   child: Card(
-          //     shape: RoundedRectangleBorder(
-          //       borderRadius: BorderRadius.circular(12),
-          //     ),
-          //     elevation: 4,
-          //     shadowColor: Colors.black.withOpacity(0.1),
-          //     child: Container(
-          //       padding: const EdgeInsets.all(12),
-          //       child: Row(
-          //         mainAxisSize: MainAxisSize.min,
-          //         children: [
-          //           Container(
-          //             padding: const EdgeInsets.all(6),
-          //             decoration: BoxDecoration(
-          //               color: (isDarkMode
-          //                       ? AppTheme.primaryColorDark
-          //                       : AppTheme.primaryColor)
-          //                   .withOpacity(0.1),
-          //               borderRadius: BorderRadius.circular(6),
-          //             ),
-          //             child: Icon(
-          //               Icons.map,
-          //               color: isDarkMode
-          //                   ? AppTheme.primaryColorDark
-          //                   : AppTheme.primaryColor,
-          //               size: 16,
-          //             ),
-          //           ),
-          //           // const SizedBox(width: 12),
-          //           // Text(
-          //           //   'Batas Wilayah',
-          //           //   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          //           //         fontWeight: FontWeight.w600,
-          //           //       ),
-          //           // ),
-          //           const SizedBox(width: 16),
-          //           Switch(
-          //             value: _showPolygons,
-          //             onChanged: (_) => _toggleAllPolygons(),
-          //             activeColor: isDarkMode
-          //                 ? AppTheme.primaryColorDark
-          //                 : AppTheme.primaryColor,
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
-
-          // Map controls
           Positioned(
             bottom: 24,
             right: 24,
@@ -446,7 +262,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   List<Polygon> _getVisiblePolygons() {
-    return _regionPolygons
+    return regionPolygonList
         .where((region) => region.isVisible)
         .map((region) => Polygon(
               points: region.points,
@@ -661,7 +477,7 @@ class _MapScreenState extends State<MapScreen> {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context); // Close dialog
+                    Navigator.pop(context);
                     Navigator.push(
                       context,
                       MaterialPageRoute(

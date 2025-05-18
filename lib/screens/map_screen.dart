@@ -1,11 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:movelytics_app/screens/terminal_detail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../theme/app_theme.dart';
 import '../providers/theme_provider.dart';
 import '../models/terminal.dart';
-import 'terminal_detail_screen.dart';
+
+class RegionPolygon {
+  final String name;
+  final List<LatLng> points;
+  final Color color;
+  final Color borderColor;
+  bool isVisible;
+
+  RegionPolygon({
+    required this.name,
+    required this.points,
+    required this.color,
+    required this.borderColor,
+    this.isVisible = true,
+  });
+}
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -17,9 +33,137 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
 
-  // East Java center coordinates
-  final LatLng _eastJavaCenter = const LatLng(-7.8, 112.5);
-  double _currentZoom = 8.0;
+  // Indonesia center coordinates
+  final LatLng _indonesiaCenter = const LatLng(-2.5, 118.0);
+  double _currentZoom = 5.0;
+
+  // List of region polygons
+  late List<RegionPolygon> _regionPolygons;
+
+  // Toggle for showing/hiding all polygons
+  bool _showPolygons = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initPolygons();
+  }
+
+  void _initPolygons() {
+    _regionPolygons = [
+      // Surabaya
+      RegionPolygon(
+        name: 'Surabaya',
+        points: const [
+          LatLng(-7.217, 112.633),
+          LatLng(-7.217, 112.799),
+          LatLng(-7.350, 112.799),
+          LatLng(-7.350, 112.633),
+        ],
+        color: Colors.red.withOpacity(0.2),
+        borderColor: Colors.red.withOpacity(0.7),
+      ),
+      // Malang
+      RegionPolygon(
+        name: 'Malang',
+        points: const [
+          LatLng(-7.900, 112.500),
+          LatLng(-7.900, 112.700),
+          LatLng(-8.100, 112.700),
+          LatLng(-8.100, 112.500),
+        ],
+        color: Colors.blue.withOpacity(0.2),
+        borderColor: Colors.blue.withOpacity(0.7),
+      ),
+      // Kediri
+      RegionPolygon(
+        name: 'Kediri',
+        points: const [
+          LatLng(-7.700, 111.900),
+          LatLng(-7.700, 112.100),
+          LatLng(-7.900, 112.100),
+          LatLng(-7.900, 111.900),
+        ],
+        color: Colors.green.withOpacity(0.2),
+        borderColor: Colors.green.withOpacity(0.7),
+      ),
+      // Sidoarjo
+      RegionPolygon(
+        name: 'Sidoarjo',
+        points: const [
+          LatLng(-7.350, 112.650),
+          LatLng(-7.350, 112.850),
+          LatLng(-7.550, 112.850),
+          LatLng(-7.550, 112.650),
+        ],
+        color: Colors.purple.withOpacity(0.2),
+        borderColor: Colors.purple.withOpacity(0.7),
+      ),
+      // Mojokerto
+      RegionPolygon(
+        name: 'Mojokerto',
+        points: const [
+          LatLng(-7.450, 112.350),
+          LatLng(-7.450, 112.550),
+          LatLng(-7.650, 112.550),
+          LatLng(-7.650, 112.350),
+        ],
+        color: Colors.orange.withOpacity(0.2),
+        borderColor: Colors.orange.withOpacity(0.7),
+      ),
+      // Jakarta
+      RegionPolygon(
+        name: 'Jakarta',
+        points: const [
+          LatLng(-6.050, 106.650),
+          LatLng(-6.050, 106.950),
+          LatLng(-6.350, 106.950),
+          LatLng(-6.350, 106.650),
+        ],
+        color: Colors.amber.withOpacity(0.2),
+        borderColor: Colors.amber.withOpacity(0.7),
+      ),
+      // Bandung
+      RegionPolygon(
+        name: 'Bandung',
+        points: const [
+          LatLng(-6.800, 107.500),
+          LatLng(-6.800, 107.700),
+          LatLng(-7.000, 107.700),
+          LatLng(-7.000, 107.500),
+        ],
+        color: Colors.cyan.withOpacity(0.2),
+        borderColor: Colors.cyan.withOpacity(0.7),
+      ),
+      // Yogyakarta
+      RegionPolygon(
+        name: 'Yogyakarta',
+        points: const [
+          LatLng(-7.700, 110.300),
+          LatLng(-7.700, 110.500),
+          LatLng(-7.900, 110.500),
+          LatLng(-7.900, 110.300),
+        ],
+        color: Colors.teal.withOpacity(0.2),
+        borderColor: Colors.teal.withOpacity(0.7),
+      ),
+    ];
+  }
+
+  void _toggleAllPolygons() {
+    setState(() {
+      _showPolygons = !_showPolygons;
+      for (var polygon in _regionPolygons) {
+        polygon.isVisible = _showPolygons;
+      }
+    });
+  }
+
+  void _togglePolygon(int index) {
+    setState(() {
+      _regionPolygons[index].isVisible = !_regionPolygons[index].isVisible;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +182,19 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
         ),
+        actions: [
+          // Toggle all polygons button
+          IconButton(
+            onPressed: _toggleAllPolygons,
+            icon: Icon(
+              _showPolygons ? Icons.layers : Icons.layers_clear,
+              color: Colors.white,
+            ),
+            tooltip: _showPolygons
+                ? 'Sembunyikan Semua Polygon'
+                : 'Tampilkan Semua Polygon',
+          ),
+        ],
       ),
       body: Stack(
         children: [
@@ -45,9 +202,9 @@ class _MapScreenState extends State<MapScreen> {
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              initialCenter: _eastJavaCenter,
+              initialCenter: _indonesiaCenter,
               initialZoom: _currentZoom,
-              minZoom: 6.0,
+              minZoom: 5.0,
               maxZoom: 18.0,
               onTap: (_, __) {},
             ),
@@ -61,9 +218,9 @@ class _MapScreenState extends State<MapScreen> {
                 userAgentPackageName: 'com.example.app',
               ),
 
-              // Polygon layer for East Java districts (simplified for demo)
+              // Polygon layer for regions
               PolygonLayer(
-                polygons: _getEastJavaPolygons(),
+                polygons: _getVisiblePolygons(),
               ),
 
               // Terminal markers
@@ -73,7 +230,7 @@ class _MapScreenState extends State<MapScreen> {
             ],
           ),
 
-          // Map legend
+          // Map legend for density
           Positioned(
             top: 16,
             right: 16,
@@ -140,6 +297,59 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           ),
+
+          // // Polygon toggle control
+          // Positioned(
+          //   top: 16,
+          //   left: 16,
+          //   child: Card(
+          //     shape: RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.circular(12),
+          //     ),
+          //     elevation: 4,
+          //     shadowColor: Colors.black.withOpacity(0.1),
+          //     child: Container(
+          //       padding: const EdgeInsets.all(12),
+          //       child: Row(
+          //         mainAxisSize: MainAxisSize.min,
+          //         children: [
+          //           Container(
+          //             padding: const EdgeInsets.all(6),
+          //             decoration: BoxDecoration(
+          //               color: (isDarkMode
+          //                       ? AppTheme.primaryColorDark
+          //                       : AppTheme.primaryColor)
+          //                   .withOpacity(0.1),
+          //               borderRadius: BorderRadius.circular(6),
+          //             ),
+          //             child: Icon(
+          //               Icons.map,
+          //               color: isDarkMode
+          //                   ? AppTheme.primaryColorDark
+          //                   : AppTheme.primaryColor,
+          //               size: 16,
+          //             ),
+          //           ),
+          //           // const SizedBox(width: 12),
+          //           // Text(
+          //           //   'Batas Wilayah',
+          //           //   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          //           //         fontWeight: FontWeight.w600,
+          //           //       ),
+          //           // ),
+          //           const SizedBox(width: 16),
+          //           Switch(
+          //             value: _showPolygons,
+          //             onChanged: (_) => _toggleAllPolygons(),
+          //             activeColor: isDarkMode
+          //                 ? AppTheme.primaryColorDark
+          //                 : AppTheme.primaryColor,
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          // ),
 
           // Map controls
           Positioned(
@@ -219,7 +429,7 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                   child: IconButton(
                     onPressed: () {
-                      _mapController.move(_eastJavaCenter, 8.0);
+                      _mapController.move(_indonesiaCenter, 5.0);
                     },
                     icon: const Icon(
                       Icons.my_location,
@@ -233,6 +443,18 @@ class _MapScreenState extends State<MapScreen> {
         ],
       ),
     );
+  }
+
+  List<Polygon> _getVisiblePolygons() {
+    return _regionPolygons
+        .where((region) => region.isVisible)
+        .map((region) => Polygon(
+              points: region.points,
+              color: region.color,
+              borderColor: region.borderColor,
+              borderStrokeWidth: 2,
+            ))
+        .toList();
   }
 
   Widget _buildLegendItem(BuildContext context, String label, Color color) {
@@ -439,18 +661,15 @@ class _MapScreenState extends State<MapScreen> {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
-                    // Navigator.pop(context); // Close dialog
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => TerminalDetailScreen(
-                    //       terminalName: terminal.name,
-                    //       location: terminal.city,
-                    //       density: terminal.density,
-                    //       count: terminal.estimatedPassengers.toString(),
-                    //     ),
-                    //   ),
-                    // );
+                    Navigator.pop(context); // Close dialog
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TerminalDetailScreen(
+                          terminal: terminal,
+                        ),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 10),
@@ -472,48 +691,5 @@ class _MapScreenState extends State<MapScreen> {
         ),
       ),
     );
-  }
-
-  List<Polygon> _getEastJavaPolygons() {
-    // Simplified polygons for East Java districts
-    // In a real app, you would load these from GeoJSON data
-    return [
-      // Surabaya (simplified)
-      Polygon(
-        points: const [
-          LatLng(-7.2, 112.6),
-          LatLng(-7.2, 112.8),
-          LatLng(-7.4, 112.8),
-          LatLng(-7.4, 112.6),
-        ],
-        color: Colors.blue.withOpacity(0.2),
-        borderColor: Colors.blue.withOpacity(0.7),
-        borderStrokeWidth: 2,
-      ),
-      // Malang (simplified)
-      Polygon(
-        points: const [
-          LatLng(-7.9, 112.5),
-          LatLng(-7.9, 112.7),
-          LatLng(-8.1, 112.7),
-          LatLng(-8.1, 112.5),
-        ],
-        color: Colors.green.withOpacity(0.2),
-        borderColor: Colors.green.withOpacity(0.7),
-        borderStrokeWidth: 2,
-      ),
-      // Kediri (simplified)
-      Polygon(
-        points: const [
-          LatLng(-7.7, 111.9),
-          LatLng(-7.7, 112.1),
-          LatLng(-7.9, 112.1),
-          LatLng(-7.9, 111.9),
-        ],
-        color: Colors.orange.withOpacity(0.2),
-        borderColor: Colors.orange.withOpacity(0.7),
-        borderStrokeWidth: 2,
-      ),
-    ];
   }
 }

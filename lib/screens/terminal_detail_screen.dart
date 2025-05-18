@@ -687,12 +687,20 @@ class _TerminalDetailScreenState extends State<TerminalDetailScreen> {
   }
 
   Future<void> _launchMapsUrl(double lat, double lng, String label) async {
-    final url = Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=$lat,$lng&query_place_id=$label');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
-      throw 'Could not launch $url';
+    final query = Uri.encodeComponent('$lat,$lng ($label)');
+    final url =
+        Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
+
+    try {
+      final canLaunch = await canLaunchUrl(url);
+
+      if (canLaunch) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      // print('Error launching URL: $e');
     }
   }
 }

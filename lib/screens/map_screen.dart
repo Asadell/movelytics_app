@@ -112,7 +112,6 @@ class _MapScreenState extends State<MapScreen> {
     final String geometryType = geometry['type'];
 
     // Get polygon color based on properties
-    // You can customize this based on your requirements
     Color polygonColor = _getPolygonColor(properties);
     Color borderColor = polygonColor.withOpacity(0.8);
 
@@ -132,9 +131,10 @@ class _MapScreenState extends State<MapScreen> {
           if (points.isNotEmpty) {
             results.add(Polygon(
               points: points,
-              color: polygonColor.withOpacity(0.3),
+              color: polygonColor.withOpacity(0.7),
               borderColor: borderColor,
               borderStrokeWidth: 2,
+              isFilled: true,
             ));
           }
         }
@@ -154,9 +154,10 @@ class _MapScreenState extends State<MapScreen> {
             if (points.isNotEmpty) {
               results.add(Polygon(
                 points: points,
-                color: polygonColor.withOpacity(0.3),
+                color: polygonColor.withOpacity(0.7),
                 borderColor: borderColor,
                 borderStrokeWidth: 2,
+                isFilled: true, // Added isFilled: true here to fix the issue
               ));
             }
           }
@@ -171,21 +172,21 @@ class _MapScreenState extends State<MapScreen> {
 
   // Determine polygon color based on properties
   Color _getPolygonColor(Map<String, dynamic> properties) {
+    // Use blue shades: light blue for low density, medium blue for medium density, dark blue for high density
     // You can customize this based on property values
-    // For example, use different colors for different admin_levels or population density
 
     // Just an example - you should adjust this based on your GeoJSON properties
     if (properties.containsKey('population')) {
       final population = int.tryParse(properties['population'].toString()) ?? 0;
       if (population > 1000000) {
-        return AppTheme.highDensityColor;
+        return const Color(0xFF0D47A1); // Deep/Dark Blue for high density
       } else if (population > 500000) {
-        return AppTheme.mediumDensityColor;
+        return const Color(0xFF1976D2); // Medium Blue for medium density
       }
     }
 
-    // Default color
-    return AppTheme.lowDensityColor;
+    // Default color - Light Blue for low density
+    return const Color(0xFF64B5F6);
   }
 
   // Helper method to break a large list into smaller chunks
@@ -280,7 +281,7 @@ class _MapScreenState extends State<MapScreen> {
                     options: MapOptions(
                       initialCenter: _indonesiaCenter,
                       initialZoom: _currentZoom,
-                      minZoom: 10.0,
+                      minZoom: 5.0,
                       maxZoom: 18.0,
                       onTap: (_, __) {},
                     ),
@@ -350,19 +351,19 @@ class _MapScreenState extends State<MapScreen> {
                             _buildLegendItem(
                               context,
                               'Kepadatan Rendah',
-                              AppTheme.lowDensityColor,
+                              const Color(0xFF64B5F6), // Light Blue
                             ),
                             const SizedBox(height: 8),
                             _buildLegendItem(
                               context,
                               'Kepadatan Sedang',
-                              AppTheme.mediumDensityColor,
+                              const Color(0xFF1976D2), // Medium Blue
                             ),
                             const SizedBox(height: 8),
                             _buildLegendItem(
                               context,
                               'Kepadatan Tinggi',
-                              AppTheme.highDensityColor,
+                              const Color(0xFF0D47A1), // Deep/Dark Blue
                             ),
                           ],
                         ),
@@ -502,13 +503,13 @@ class _MapScreenState extends State<MapScreen> {
 
       switch (terminal.density) {
         case 'Tinggi':
-          markerColor = AppTheme.highDensityColor;
+          markerColor = const Color(0xFF0D47A1); // Deep/Dark Blue
           break;
         case 'Sedang':
-          markerColor = AppTheme.mediumDensityColor;
+          markerColor = const Color(0xFF1976D2); // Medium Blue
           break;
         default:
-          markerColor = AppTheme.lowDensityColor;
+          markerColor = const Color(0xFF64B5F6); // Light Blue
       }
 
       return Marker(
@@ -553,13 +554,13 @@ class _MapScreenState extends State<MapScreen> {
     Color statusColor;
     switch (terminal.density) {
       case 'Tinggi':
-        statusColor = AppTheme.highDensityColor;
+        statusColor = const Color(0xFF0D47A1); // Deep/Dark Blue
         break;
       case 'Sedang':
-        statusColor = AppTheme.mediumDensityColor;
+        statusColor = const Color(0xFF1976D2); // Medium Blue
         break;
       default:
-        statusColor = AppTheme.lowDensityColor;
+        statusColor = const Color(0xFF64B5F6); // Light Blue
     }
 
     showDialog(

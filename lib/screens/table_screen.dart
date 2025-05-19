@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movelytics_app/screens/terminal_detail_screen.dart';
 import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
 import '../providers/theme_provider.dart';
@@ -654,13 +655,13 @@ class _TableScreenState extends State<TableScreen> {
   }
 
   void _navigateToTerminalDetail(Terminal terminal) {
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => TerminalDetailScreen(
-    //       terminal: terminal, // Pass the entire terminal object
-    //     ),
-    //   ),
-    // );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TerminalDetailScreen(
+          terminal: terminal, // Pass the entire terminal object
+        ),
+      ),
+    );
   }
 }

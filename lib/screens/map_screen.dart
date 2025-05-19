@@ -1,12 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:movelytics_app/models/region_polygons.dart';
-import 'package:movelytics_app/screens/terminal_detail_screen.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../theme/app_theme.dart';
 import '../providers/theme_provider.dart';
 import '../models/terminal.dart';
+import 'package:movelytics_app/screens/terminal_detail_screen.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -21,57 +22,170 @@ class _MapScreenState extends State<MapScreen> {
   final LatLng _indonesiaCenter = const LatLng(-2.5, 118.0);
   double _currentZoom = 5.0;
 
-  // Use a local list for region polygons
-  List<RegionPolygon> _localRegionPolygonList = [];
+  // List to store polygons loaded from GeoJSON
+  List<Polygon> _geoJsonPolygons = [];
   bool _showPolygons = true;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Start loading after first frame is drawn
+    // Load GeoJSON data after first frame is drawn
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadRegionPolygons();
+      _loadGeoJsonData();
     });
   }
 
-  // Method to load polygon data
-  void _loadRegionPolygons() async {
+  // Load GeoJSON data from asset file
+  Future<void> _loadGeoJsonData() async {
     if (!mounted) return;
 
     try {
+      setState(() {
+        _isLoading = true;
+      });
+
       // Add a small delay to ensure UI has time to build completely
       await Future.delayed(const Duration(milliseconds: 300));
 
-      if (!mounted) return;
+      // Load the GeoJSON file from assets
+      final String geoJsonString =
+          await rootBundle.loadString('assets/export.geojson');
+      final Map<String, dynamic> geoJson = jsonDecode(geoJsonString);
 
-      // Load data in chunks to avoid UI freezes with large datasets
-      final chunks = _chunkList(regionPolygonList, 50);
-      List<RegionPolygon> result = [];
-
-      for (final chunk in chunks) {
-        if (!mounted) return;
-        result.addAll(chunk);
-
-        // Update UI after each chunk is loaded
-        setState(() {
-          _localRegionPolygonList = List.from(result);
-        });
-
-        // Give UI time to breathe between chunks
-        await Future.delayed(const Duration(milliseconds: 50));
-      }
+      // Process the GeoJSON data in chunks to avoid UI freezes
+      await _processGeoJsonFeatures(geoJson);
     } catch (e) {
-      // Handle any errors loading the data
-      debugPrint('Error loading region polygons: $e');
+      debugPrint('Error loading GeoJSON data: $e');
     } finally {
-      // Check if still mounted before updating state
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
       }
     }
+  }
+
+  // Process GeoJSON features and convert to polygons
+  Future<void> _processGeoJsonFeatures(Map<String, dynamic> geoJson) async {
+    if (geoJson['type'] != 'FeatureCollection' ||
+        !geoJson.containsKey('features')) {
+      debugPrint('Invalid GeoJSON format');
+      return;
+    }
+
+    final features = geoJson['features'] as List;
+
+    // Process features in chunks
+    final chunks = _chunkList<dynamic>(features, 20);
+    List<Polygon> polygonsList = [];
+
+    for (final chunk in chunks) {
+      if (!mounted) return;
+
+      List<Polygon> chunkPolygons = [];
+
+      for (var feature in chunk) {
+        final polygons = _convertFeatureToPolygons(feature);
+        if (polygons.isNotEmpty) {
+          chunkPolygons.addAll(polygons);
+        }
+      }
+
+      polygonsList.addAll(chunkPolygons);
+
+      // Update UI after each chunk is processed
+      setState(() {
+        _geoJsonPolygons = List.from(polygonsList);
+      });
+
+      // Give UI time to breathe between chunks
+      await Future.delayed(const Duration(milliseconds: 50));
+    }
+  }
+
+  // Convert a GeoJSON feature to Flutter Map Polygon objects
+  List<Polygon> _convertFeatureToPolygons(dynamic feature) {
+    List<Polygon> results = [];
+    final properties = feature['properties'] as Map<String, dynamic>;
+    final geometry = feature['geometry'] as Map<String, dynamic>;
+    final String geometryType = geometry['type'];
+
+    // Get polygon color based on properties
+    // You can customize this based on your requirements
+    Color polygonColor = _getPolygonColor(properties);
+    Color borderColor = polygonColor.withOpacity(0.8);
+
+    try {
+      if (geometryType == 'Polygon') {
+        // Handle Polygon type
+        final coordinates = geometry['coordinates'] as List;
+
+        for (var ring in coordinates) {
+          List<LatLng> points = [];
+          for (var coordinate in ring) {
+            // GeoJSON uses [longitude, latitude] format, but LatLng uses [latitude, longitude]
+            points.add(
+                LatLng(coordinate[1].toDouble(), coordinate[0].toDouble()));
+          }
+
+          if (points.isNotEmpty) {
+            results.add(Polygon(
+              points: points,
+              color: polygonColor.withOpacity(0.3),
+              borderColor: borderColor,
+              borderStrokeWidth: 2,
+            ));
+          }
+        }
+      } else if (geometryType == 'MultiPolygon') {
+        // Handle MultiPolygon type
+        final multiCoordinates = geometry['coordinates'] as List;
+
+        for (var polygon in multiCoordinates) {
+          for (var ring in polygon) {
+            List<LatLng> points = [];
+            for (var coordinate in ring) {
+              // GeoJSON uses [longitude, latitude] format, but LatLng uses [latitude, longitude]
+              points.add(
+                  LatLng(coordinate[1].toDouble(), coordinate[0].toDouble()));
+            }
+
+            if (points.isNotEmpty) {
+              results.add(Polygon(
+                points: points,
+                color: polygonColor.withOpacity(0.3),
+                borderColor: borderColor,
+                borderStrokeWidth: 2,
+              ));
+            }
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Error processing feature: $e');
+    }
+
+    return results;
+  }
+
+  // Determine polygon color based on properties
+  Color _getPolygonColor(Map<String, dynamic> properties) {
+    // You can customize this based on property values
+    // For example, use different colors for different admin_levels or population density
+
+    // Just an example - you should adjust this based on your GeoJSON properties
+    if (properties.containsKey('population')) {
+      final population = int.tryParse(properties['population'].toString()) ?? 0;
+      if (population > 1000000) {
+        return AppTheme.highDensityColor;
+      } else if (population > 500000) {
+        return AppTheme.mediumDensityColor;
+      }
+    }
+
+    // Default color
+    return AppTheme.lowDensityColor;
   }
 
   // Helper method to break a large list into smaller chunks
@@ -87,16 +201,6 @@ class _MapScreenState extends State<MapScreen> {
   void _toggleAllPolygons() {
     setState(() {
       _showPolygons = !_showPolygons;
-      for (var polygon in _localRegionPolygonList) {
-        polygon.isVisible = _showPolygons;
-      }
-    });
-  }
-
-  void _togglePolygon(int index) {
-    setState(() {
-      _localRegionPolygonList[index].isVisible =
-          !_localRegionPolygonList[index].isVisible;
     });
   }
 
@@ -155,11 +259,11 @@ class _MapScreenState extends State<MapScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    if (_localRegionPolygonList.isNotEmpty)
+                    if (_geoJsonPolygons.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
-                          'Telah dimuat: ${_localRegionPolygonList.length} polygon',
+                          'Telah dimuat: ${_geoJsonPolygons.length} polygon',
                           style: TextStyle(
                             color: isDarkMode ? Colors.white54 : Colors.black45,
                             fontSize: 12,
@@ -188,9 +292,10 @@ class _MapScreenState extends State<MapScreen> {
                         subdomains: const ['a', 'b', 'c'],
                         userAgentPackageName: 'com.example.app',
                       ),
-                      PolygonLayer(
-                        polygons: _getVisiblePolygons(),
-                      ),
+                      if (_showPolygons)
+                        PolygonLayer(
+                          polygons: _geoJsonPolygons,
+                        ),
                       MarkerLayer(
                         markers: _buildMarkers(terminalList, context),
                       ),
@@ -360,18 +465,6 @@ class _MapScreenState extends State<MapScreen> {
               ),
       ),
     );
-  }
-
-  List<Polygon> _getVisiblePolygons() {
-    return _localRegionPolygonList
-        .where((region) => region.isVisible)
-        .map((region) => Polygon(
-              points: region.points,
-              color: region.color,
-              borderColor: region.borderColor,
-              borderStrokeWidth: 2,
-            ))
-        .toList();
   }
 
   Widget _buildLegendItem(BuildContext context, String label, Color color) {

@@ -898,12 +898,15 @@ class _GraphScreenState extends State<GraphScreen>
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Text(
-                      'Tren Jumlah Penumpang',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                          ),
+                    Expanded(
+                      child: Text(
+                        'Tren Jumlah Penumpang',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: textColor,
+                            ),
+                        overflow: TextOverflow.fade,
+                      ),
                     ),
                   ],
                 ),

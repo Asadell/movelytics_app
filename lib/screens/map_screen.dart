@@ -19,7 +19,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
 
-  final LatLng _indonesiaCenter = const LatLng(-2.5, 118.0);
+  final LatLng _indonesiaCenter = const LatLng(-7.8, 112.55);
   double _currentZoom = 5.0;
 
   // List to store polygons loaded from GeoJSON
@@ -280,7 +280,7 @@ class _MapScreenState extends State<MapScreen> {
                     options: MapOptions(
                       initialCenter: _indonesiaCenter,
                       initialZoom: _currentZoom,
-                      minZoom: 5.0,
+                      minZoom: 10.0,
                       maxZoom: 18.0,
                       onTap: (_, __) {},
                     ),

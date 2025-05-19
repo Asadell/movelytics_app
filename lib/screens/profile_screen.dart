@@ -60,7 +60,8 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           child: CircleAvatar(
                             radius: 60,
-                            backgroundImage: NetworkImage(userProvider.profileImageUrl),
+                            backgroundImage:
+                                NetworkImage(userProvider.profileImageUrl),
                           ),
                         ),
                         Positioned(
@@ -77,7 +78,8 @@ class ProfileScreen extends StatelessWidget {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 gradient: LinearGradient(
-                                  colors: AppTheme.getAccentGradient(isDarkMode),
+                                  colors:
+                                      AppTheme.getAccentGradient(isDarkMode),
                                 ),
                               ),
                               child: const Icon(
@@ -93,14 +95,16 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     Text(
                       userProvider.username,
-                      style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style:
+                          Theme.of(context).textTheme.displayMedium?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                     const SizedBox(height: 4),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 6),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20),
@@ -131,7 +135,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Edit Profile
                   _buildProfileActionCard(
                     context,
@@ -148,24 +152,24 @@ class ProfileScreen extends StatelessWidget {
                     },
                     isDarkMode: isDarkMode,
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Notification Settings
-                  _buildToggleCard(
-                    context,
-                    icon: Icons.notifications,
-                    title: 'Notifikasi',
-                    subtitle: 'Aktifkan atau nonaktifkan notifikasi',
-                    value: userProvider.notificationsEnabled,
-                    onChanged: (value) {
-                      userProvider.setNotifications(value);
-                    },
-                    isDarkMode: isDarkMode,
-                  ),
-                  
-                  const SizedBox(height: 16),
-                  
+                  // _buildToggleCard(
+                  //   context,
+                  //   icon: Icons.notifications,
+                  //   title: 'Notifikasi',
+                  //   subtitle: 'Aktifkan atau nonaktifkan notifikasi',
+                  //   value: userProvider.notificationsEnabled,
+                  //   onChanged: (value) {
+                  //     userProvider.setNotifications(value);
+                  //   },
+                  //   isDarkMode: isDarkMode,
+                  // ),
+
+                  // const SizedBox(height: 16),
+
                   // Dark Mode Toggle
                   _buildToggleCard(
                     context,
@@ -178,84 +182,85 @@ class ProfileScreen extends StatelessWidget {
                     },
                     isDarkMode: isDarkMode,
                   ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  Text(
-                    'Lainnya',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Help & Support
-                  _buildProfileActionCard(
-                    context,
-                    icon: Icons.help_outline,
-                    title: 'Bantuan & Dukungan',
-                    subtitle: 'Pusat bantuan, FAQ, kontak',
-                    onTap: () {},
-                    isDarkMode: isDarkMode,
-                  ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // About
-                  _buildProfileActionCard(
-                    context,
-                    icon: Icons.info_outline,
-                    title: 'Tentang Aplikasi',
-                    subtitle: 'Versi, lisensi, kebijakan privasi',
-                    onTap: () {},
-                    isDarkMode: isDarkMode,
-                  ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // Logout
-                  _buildProfileActionCard(
-                    context,
-                    icon: Icons.logout,
-                    title: 'Keluar',
-                    subtitle: 'Keluar dari akun Anda',
-                    onTap: () {
-                      // Show logout confirmation dialog
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Keluar'),
-                          content: const Text('Apakah Anda yakin ingin keluar?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('Batal'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                // Navigate to login screen
-                                Navigator.pushNamedAndRemoveUntil(
-                                  context,
-                                  '/',
-                                  (route) => false,
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                              ),
-                              child: const Text(
-                                'Keluar',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    isDarkMode: isDarkMode,
-                    isLogout: true,
-                  ),
+
+                  // const SizedBox(height: 24),
+
+                  // Text(
+                  //   'Lainnya',
+                  //   style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  //         fontWeight: FontWeight.bold,
+                  //       ),
+                  // ),
+                  // const SizedBox(height: 16),
+
+                  // // Help & Support
+                  // _buildProfileActionCard(
+                  //   context,
+                  //   icon: Icons.help_outline,
+                  //   title: 'Bantuan & Dukungan',
+                  //   subtitle: 'Pusat bantuan, FAQ, kontak',
+                  //   onTap: () {},
+                  //   isDarkMode: isDarkMode,
+                  // ),
+
+                  // const SizedBox(height: 16),
+
+                  // // About
+                  // _buildProfileActionCard(
+                  //   context,
+                  //   icon: Icons.info_outline,
+                  //   title: 'Tentang Aplikasi',
+                  //   subtitle: 'Versi, lisensi, kebijakan privasi',
+                  //   onTap: () {},
+                  //   isDarkMode: isDarkMode,
+                  // ),
+
+                  // const SizedBox(height: 16),
+
+                  // // Logout
+                  // _buildProfileActionCard(
+                  //   context,
+                  //   icon: Icons.logout,
+                  //   title: 'Keluar',
+                  //   subtitle: 'Keluar dari akun Anda',
+                  //   onTap: () {
+                  //     // Show logout confirmation dialog
+                  //     showDialog(
+                  //       context: context,
+                  //       builder: (context) => AlertDialog(
+                  //         title: const Text('Keluar'),
+                  //         content:
+                  //             const Text('Apakah Anda yakin ingin keluar?'),
+                  //         actions: [
+                  //           TextButton(
+                  //             onPressed: () => Navigator.pop(context),
+                  //             child: const Text('Batal'),
+                  //           ),
+                  //           ElevatedButton(
+                  //             onPressed: () {
+                  //               Navigator.pop(context);
+                  //               // Navigate to login screen
+                  //               Navigator.pushNamedAndRemoveUntil(
+                  //                 context,
+                  //                 '/',
+                  //                 (route) => false,
+                  //               );
+                  //             },
+                  //             style: ElevatedButton.styleFrom(
+                  //               backgroundColor: Colors.red,
+                  //             ),
+                  //             child: const Text(
+                  //               'Keluar',
+                  //               style: TextStyle(color: Colors.white),
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     );
+                  //   },
+                  //   isDarkMode: isDarkMode,
+                  //   isLogout: true,
+                  // ),
                 ],
               ),
             ),
@@ -274,10 +279,10 @@ class ProfileScreen extends StatelessWidget {
     required bool isDarkMode,
     bool isLogout = false,
   }) {
-    final Color iconColor = isLogout 
-        ? Colors.red 
+    final Color iconColor = isLogout
+        ? Colors.red
         : (isDarkMode ? AppTheme.primaryColorDark : AppTheme.primaryColor);
-    
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -344,8 +349,9 @@ class ProfileScreen extends StatelessWidget {
     required ValueChanged<bool> onChanged,
     required bool isDarkMode,
   }) {
-    final Color iconColor = isDarkMode ? AppTheme.primaryColorDark : AppTheme.primaryColor;
-    
+    final Color iconColor =
+        isDarkMode ? AppTheme.primaryColorDark : AppTheme.primaryColor;
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(

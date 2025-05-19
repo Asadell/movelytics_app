@@ -19,6 +19,8 @@ dependencies:
   flutter_map_marker_popup: ^5.2.0
   url_launcher: ^6.2.1
   flutter_launcher_icons: ^0.13.1
+  polylabel: ^1.0.1
+  rename_app: ^1.6.3
 
 dev_dependencies:
   flutter_test:

@@ -409,7 +409,7 @@ packages:
     source: hosted
     version: "2.1.8"
   polylabel:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: polylabel
       sha256: "41b9099afb2aa6c1730bdd8a0fab1400d287694ec7615dd8516935fa3144214b"
@@ -440,6 +440,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.5"
+  rename_app:
+    dependency: "direct main"
+    description:
+      name: rename_app
+      sha256: "4fc964397592fc4a01e7ccb156b6e5288cb04e1c82317c02390f6726bde78b88"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.6.3"
   shared_preferences:
     dependency: "direct main"
     description:
